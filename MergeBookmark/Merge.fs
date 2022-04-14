@@ -1,11 +1,16 @@
 ﻿namespace MergeBookmark
 
 module Merge =
-    
-    open System
-    open System.IO
-    open FSharp.Data
-    
-    let TestRead file =
-        File.OpenText file
-        |> HtmlDocument.Load
+   
+    let GetDuplicates (marks1:seq<string>) (marks2:seq<string>) =
+        marks1
+        |> Seq.filter (fun mark ->
+            marks2
+            |> Seq.contains mark)
+
+    let GetUnique (marks1:seq<string>) (marks2:seq<string>) =
+        marks1
+        |> Seq.filter (fun mark ->
+            marks2
+            |> Seq.contains mark
+            |> not)
