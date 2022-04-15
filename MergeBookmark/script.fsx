@@ -1,6 +1,8 @@
 ﻿#r @"C:\Users\biggskanz\.nuget\packages\fsharp.data\4.2.8\lib\netstandard2.0\FSharp.Data.dll"
 #load "Merge.fs"
 open MergeBookmark.Merge
+#load "IO.fs"
+open MergeBookmark.IO
 
 let bookmarks1 =
     GetLinks @"D:\repos\fsharp\merge.chrome.bookmarks\MergeBookmark\test\bookmarks_35.html"

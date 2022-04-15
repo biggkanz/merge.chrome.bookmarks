@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Domain.fs" />
+        <Compile Include="DateTime.fs" />
         <Compile Include="IO.fs" />
         <Compile Include="Merge.fs" />
         <Compile Include="Program.fs" />
@@ -14,7 +15,7 @@
         <Content Include="test\bookmarks_35_30dup.html" />
         <Content Include="test\bookmarks_2_6_22.html" />
         <None Include="script.fsx" />
-        <None Include="script-html.fsx" />
+        <None Include="script-test-datetime.fsx" />
     </ItemGroup>
 
     <ItemGroup>
