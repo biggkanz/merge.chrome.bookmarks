@@ -8,13 +8,16 @@
     <ItemGroup>
         <Compile Include="Domain.fs" />
         <Compile Include="TimestampUtil.fs" />
+        <Compile Include="Parse.fs" />
         <Compile Include="IO.fs" />
+        <Compile Include="Operations.fs" />
         <Compile Include="Merge.fs" />
         <Compile Include="Program.fs" />
         <Content Include="test\bookmarks_35.html" />
         <Content Include="test\bookmarks_35_30dup.html" />
         <Content Include="test\bookmarks_2_6_22.html" />
-        <None Include="script-test-merge.fsx" />
+        <Content Include="test\test.html" />
+        <None Include="script-test-io.fsx" />
         <None Include="script-test-datetime.fsx" />
         <None Include="script-test-parse.fsx" />
     </ItemGroup>

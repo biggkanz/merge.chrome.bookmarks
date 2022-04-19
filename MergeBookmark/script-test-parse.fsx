@@ -1,6 +1,7 @@
 ﻿#load "Domain.fs"
 #load "TimestampUtil.fs"
-#load "IO.fs"
-open MergeBookmark.IO
+#load "Parse.fs"
+open MergeBookmark.Parse
 
-ReadBookmarkFile @"D:\repos\fsharp\merge.chrome.bookmarks\MergeBookmark\test\bookmarks_35.html"
+testReadBookmarkFile @"D:\repos\fsharp\merge.chrome.bookmarks\MergeBookmark\test\test.html"
+|> Seq.iter (printfn "%A")
