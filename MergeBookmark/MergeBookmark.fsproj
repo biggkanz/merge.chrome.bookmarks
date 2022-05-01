@@ -6,24 +6,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Domain.fs" />
-        <Compile Include="TimestampUtil.fs" />
-        <Compile Include="Parse.fs" />
-        <Compile Include="IO.fs" />
-        <Compile Include="Operations.fs" />
-        <Compile Include="Merge.fs" />
-        <Compile Include="Program.fs" />
         <Content Include="test\bookmarks_35.html" />
         <Content Include="test\bookmarks_35_30dup.html" />
         <Content Include="test\bookmarks_2_6_22.html" />
         <Content Include="test\test.html" />
-        <None Include="script-test-io.fsx" />
-        <None Include="script-test-datetime.fsx" />
-        <None Include="script-test-parse.fsx" />
+        <Content Include="test\test2.html" />
+        <Content Include="test\test0.html" />
+        <Content Include="test\ItemsOutput.txt" />
+        <Compile Include="src\Utility.fs" />
+        <Compile Include="src\Data.fs" />
+        <Compile Include="src\Domain.fs" />
+        <Compile Include="src\Parse.fs" />
+        <Compile Include="src\Operations.fs" />
+        <Compile Include="src\Merge.fs" />
+        <Compile Include="src\Program.fs" />
+        <None Include="script\script-test-data.fsx" />
+        <None Include="script\script-test-parse.fsx" />
+        <None Include="script\script-test-tree-sort.fsx" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Dapper.FSharp" Version="3.2.0" />
       <PackageReference Include="FSharp.Data" Version="4.2.8" />
+      <PackageReference Include="Npgsql" Version="7.0.0-preview.3" />
     </ItemGroup>
 
 </Project>
