@@ -1,6 +1,7 @@
 bin/
 obj/
 test/
+/MergeBookmark/test/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
