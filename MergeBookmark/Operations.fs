@@ -1,34 +1,31 @@
 ﻿namespace MergeBookmark
 
-open MergeBookmark.Domain
-
 module Operations =
     
     open System.Collections.Generic
     open Parse
-    open Data
     open Domain
     
     let htmlToItem file =
-        let mutable PK = 0
-        let parentFolderList = List<int>()
-        do parentFolderList.Add(0)
+        let mutable index = 0
+        let parentFolders = List<int>()
+        do parentFolders.Add(0)
         
         [for line in file do
             match (ParseLine line) with
-            | BookmarkLine.FolderInfo fi ->
-                do PK <- PK + 1                   
-                Some (FolderInfoItem (PK,
-                      parentFolderList.Item(parentFolderList.Count-1),
+            | BookmarkLine.Folder fi ->
+                do index <- index + 1                   
+                Some (FolderEntry (index,
+                      parentFolders.Item(parentFolders.Count-1),
                       fi))
-                do parentFolderList.Add(PK) 
-            | BookmarkLine.BookmarkInfo bi ->
-                do PK <- PK + 1
-                Some (MarkInfoItem (PK,
-                      parentFolderList.Item(parentFolderList.Count-1),
+                do parentFolders.Add(index) 
+            | BookmarkLine.Mark bi ->
+                do index <- index + 1
+                Some (MarkEntry (index,
+                      parentFolders.Item(parentFolders.Count-1),
                       bi))
             | BookmarkLine.ListCloseTag ->
-                do parentFolderList.RemoveAt(parentFolderList.Count-1)
+                do parentFolders.RemoveAt(parentFolders.Count-1)
                 None    
             | BookmarkLine.Ig ->
                 None]
@@ -38,23 +35,18 @@ module Operations =
         lst
         |> List.map(fun x ->
             match x with
-            | MarkInfoItem (_,_,mark) -> Some mark
+            | MarkEntry (_,_,mark) -> Some mark
             | _ -> None )
         |> List.choose id
-        
-    let duplicates xs =
-        Seq.scan (fun xs x -> Set.add x xs) Set.empty xs
-        |> Seq.zip xs
-        |> Seq.choose (fun (x, xs) -> if Set.contains x xs then Some x else None)
-        
+                
     // tree
         
     let buildTree (list:Item list) =
         let rec getChildren parentId = list |> List.choose (fun itm ->
             match itm with
-            | MarkInfoItem (i,p,info) when p = parentId ->
+            | MarkEntry (i,p,info) when p = parentId ->
                 Some (LeafNode info)
-            | FolderInfoItem (i,p,info) when p = parentId ->
+            | FolderEntry (i,p,info) when p = parentId ->
                 Some (InternalNode (info, getChildren i))
             | _ -> None )
             
@@ -62,7 +54,7 @@ module Operations =
             list
             |> List.pick (fun itm ->
                 match itm with
-                | FolderInfoItem (i,p,info) when p = 0 ->
+                | FolderEntry (i,p,info) when p = 0 ->
                     Some (ItemTree.InternalNode (info, getChildren i))
                 | _ -> failwith "no root node found")
         root
@@ -70,6 +62,6 @@ module Operations =
     let getPath (tree:ItemTree) =
         let fMark acc mark =
             acc + mark.name + "| "
-        let fFolder acc (nodeInfo:FolderInfo) =
+        let fFolder acc (nodeInfo:Folder) =
             acc + nodeInfo.name + " -> "
         Tree.fold fMark fFolder "" tree

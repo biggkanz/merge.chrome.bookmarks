@@ -38,19 +38,7 @@ module Time =
 module IO =
     
     open System.IO
-    open FSharp.Data
-    
-    let ReadHtmlDocument file =  
-        File.OpenText file  
-        |> HtmlDocument.Load
-        
-    let GetHtmlNodes path =  
-        let html = ReadHtmlDocument path  
-        let result =
-            html.Elements()
-            |> List.last
-        result
-        
+
     let ReadAllLines file =
         Log.green (sprintf $"ReadAllLines: {file}")
         try

@@ -1,17 +1,16 @@
 ﻿namespace MergeBookmark
 
 module Merge =
-   
-    let GetDuplicates (marks1:seq<string>) (marks2:seq<string>) =
-        marks1
-        |> Seq.filter (fun mark ->
-            marks2
-            |> Seq.contains mark)
-
-    let GetUnique (marks1:seq<string>) (marks2:seq<string>) =
-        marks1
-        |> Seq.filter (fun mark ->
-            marks2
-            |> Seq.contains mark
-            |> not)
+    
+    open Domain
         
+    let notContainsBookmark lst mark =
+        let dups =
+            lst
+            |> Seq.where (fun x -> x.url = mark.url)
+            |> Seq.toList
+        dups.Length = 0        
+        
+    let getUniqueBookmarks marks1 marks2 =
+        marks2
+        |> Seq.where (notContainsBookmark marks1)

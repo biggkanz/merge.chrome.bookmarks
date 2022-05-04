@@ -2,9 +2,7 @@
 
 open System
 
-
 module Parse =
-    
     
     open System.Text.RegularExpressions
     open Domain
@@ -59,7 +57,7 @@ module Parse =
         let date = parseInteger64Group addDateRegex str |> Option.defaultValue 0L
         let icon = parseStringGroup iconRegex str |> Option.defaultValue ""
         match href with
-        | Some h    -> BookmarkLine.BookmarkInfo { name=name; url=h; icon="icon" }
+        | Some h    -> BookmarkLine.Mark { name=name; url=h; icon="icon" }
         | _         -> Ig
         
     let parseFolder str =
@@ -67,8 +65,8 @@ module Parse =
         let date = parseInteger64Group addDateRegex str |> Option.defaultValue 0L
         let modified = parseInteger64Group modifiedRegex str |> Option.defaultValue 0L
         match name with
-        | Some n    -> BookmarkLine.FolderInfo {name=n; date=date.ToString(); modified=modified.ToString()}
-        | _         -> BookmarkLine.FolderInfo {name="unnamed folder"; date=date.ToString(); modified=modified.ToString()}
+        | Some n    -> BookmarkLine.Folder {name=n; date=date.ToString(); modified=modified.ToString()}
+        | _         -> BookmarkLine.Folder {name="unnamed folder"; date=date.ToString(); modified=modified.ToString()}
 
     /// determine line type and extract data
     let ParseLine (line:string) =
