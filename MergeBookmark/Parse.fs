@@ -57,8 +57,8 @@ module Parse =
         let date = parseInteger64Group addDateRegex str |> Option.defaultValue 0L
         let icon = parseStringGroup iconRegex str |> Option.defaultValue ""
         match href with
-        | Some h    -> BookmarkLine.Mark { name=name; url=h; icon="icon" }
-        | _         -> Ig
+        | Some h    -> Some (BookmarkLine.Mark { name=name; href=h; icon="icon" })
+        | _         -> None
         
     let parseFolder str =
         let name = parseStringGroup nameRegex str       
@@ -70,7 +70,8 @@ module Parse =
 
     /// determine line type and extract data
     let ParseLine (line:string) =
-        if line.Contains("<H3") then parseFolder line
+        if line.Contains("<H3") then Some (parseFolder line)
         elif line.Contains("<A HREF=") then parseBookmark line
-        elif line.Contains("</DL>") then BookmarkLine.ListCloseTag
-        else Ig
+        elif line.Contains("<DL>") then Some (BookmarkLine.ListOpenTag)
+        elif line.Contains("</DL>") then Some (BookmarkLine.ListCloseTag)
+        else None

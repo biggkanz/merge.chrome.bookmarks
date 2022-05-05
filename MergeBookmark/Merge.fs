@@ -4,13 +4,13 @@ module Merge =
     
     open Domain
         
-    let notContainsBookmark lst mark =
-        let dups =
+    let containsMark lst mark =
+        let duplicates =
             lst
-            |> Seq.where (fun x -> x.url = mark.url)
+            |> Seq.where (fun x -> x.href = mark.href)
             |> Seq.toList
-        dups.Length = 0        
+        duplicates.Length > 0        
         
     let getUniqueBookmarks marks1 marks2 =
         marks2
-        |> Seq.where (notContainsBookmark marks1)
+        |> Seq.where (fun x -> not <| containsMark marks1 x)

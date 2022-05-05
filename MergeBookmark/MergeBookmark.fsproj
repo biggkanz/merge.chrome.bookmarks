@@ -17,6 +17,7 @@
         <Compile Include="Utility.fs" />
         <Compile Include="Domain.fs" />
         <Compile Include="Parse.fs" />
+        <Compile Include="Build.fs" />
         <Compile Include="Operations.fs" />
         <Compile Include="Merge.fs" />
         <Compile Include="Program.fs" />

@@ -5,16 +5,16 @@ type Tree<'LeafData,'INodeData> =
     | InternalNode of 'INodeData * Tree<'LeafData,'INodeData> seq
     
 type Folder = {name:string; date:string; modified:string}
-type Mark = {name:string; url:string; icon:string}
+type Mark = {name:string; href:string; icon:string}
 
-type ItemTree = Tree<Mark,Folder>    
+type BookmarkTree = Tree<Mark,Folder>    
 
 // intermediate data for converting bookmark file
 type FolderEntry = int * int * Folder
 type MarkEntry = int * int * Mark
 
 /// intermediate data with primaryId and parentId
-type Item =
+type Entry =
     | FolderEntry of FolderEntry
     | MarkEntry of MarkEntry
 
@@ -22,8 +22,8 @@ type Item =
 type BookmarkLine =
     | Folder of Folder
     | Mark of Mark
-    | ListCloseTag        
-    | Ig
+    | ListOpenTag 
+    | ListCloseTag    
  
 /// Tree collection functions   
 module Tree =
