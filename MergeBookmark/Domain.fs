@@ -4,14 +4,14 @@ type Tree<'LeafData,'INodeData> =
     | LeafNode of 'LeafData
     | InternalNode of 'INodeData * Tree<'LeafData,'INodeData> seq
     
-type Folder = {name:string; date:string; modified:string}
-type Mark = {name:string; href:string; icon:string}
+type FolderInfo = {name:string; date:string; modified:string}
+type MarkInfo = {name:string; href:string; icon:string}
 
-type BookmarkTree = Tree<Mark,Folder>    
+type BookmarkTree = Tree<MarkInfo,FolderInfo>    
 
 // intermediate data for converting bookmark file
-type FolderEntry = int * int * Folder
-type MarkEntry = int * int * Mark
+type FolderEntry = int * int * FolderInfo
+type MarkEntry = int * int * MarkInfo
 
 /// intermediate data with primaryId and parentId
 type Entry =
@@ -20,15 +20,22 @@ type Entry =
 
 /// raw data parsed from a bookmark file line
 type BookmarkLine =
-    | Folder of Folder
-    | Mark of Mark
-    | ListOpenTag 
-    | ListCloseTag    
+    | Folder of FolderInfo
+    | Mark of MarkInfo
+    | ListOpen 
+    | ListClose
+    
+type DocumentLine =
+    | FolderTag of string
+    | MarkTag of string
+    | ListOpenTag of string
+    | ListCloseTag of string
  
 /// Tree collection functions   
 module Tree =
     
-    open MergeBookmark.Utility
+    open MergeBookmark.Utility    
+    open System
 
     let rec cata fLeaf fNode (tree:Tree<'LeafData,'INodeData>) :'r =
         let recurse = cata fLeaf fNode
@@ -71,3 +78,14 @@ module Tree =
         | InternalNode (nodeInfo,subtrees) ->
             subtrees |> Seq.iter recurse
             fNode nodeInfo
+               
+    let prettyPrint (tree:BookmarkTree) =
+        let rec loop depth (tree:BookmarkTree) =
+            let spacer = String(' ', depth * 4)
+            match tree with
+            | LeafNode m ->        
+                printfn "%s |- %A" spacer m.name
+            | InternalNode (f,subtrees) ->
+                printfn "%s | %s" spacer f.name
+                subtrees |> Seq.iter (loop (depth + 1)) 
+        loop 0 tree

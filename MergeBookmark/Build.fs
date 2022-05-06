@@ -1,5 +1,7 @@
 ﻿module MergeBookmark.Build
 
+open System
+open MergeBookmark.Domain
 open Utility.StringBuffer
 open Domain
 
@@ -25,35 +27,45 @@ let mark href date icon name =
     
 let lineFromMark m =
     mark m.href "" m.icon m.name
-    
+     
 let lineFromFolder f =
     folder f.date "" f.name
-    
-let DocumentFromTree (tree:BookmarkTree) =
-        let mutable indent = 0
-    
-        let indentLine (line:string) =
-            stringBuffer {
-                for _ in 1 .. indent do "    "
-                line
-            }
-        [|
-//            let fMark = indentLine (lineFromMark m)
-//            let fFolder = indentLine (lineFromFolder f)
+        
+//let htmlFromLine (lines:BookmarkLine seq) =
+//    let documentLine (line:BookmarkLine) : DocumentLine = 
+//        match line with
+//        | Folder f -> FolderTag (lineFromFolder f)
+//        | Mark m -> MarkTag (lineFromMark m)
+//        | ListOpen -> ListOpenTag listBegin
+//        | ListClose -> ListCloseTag listEnd
+//        
+//    let indentLines (lines:DocumentLine seq) =
+//        let mutable indent = 0
+//        
+//        let lineToString line =
+//            match line with
+//            | FolderTag f -> f
+//            | MarkTag m -> m
+//            | ListOpenTag o ->
+//                do indent <- indent + 1
+//                o
+//            | ListCloseTag c ->
+//                do indent <- indent - 1
+//                c
 //            
-//            Tree.cata fMark  ->
-//            
-            
-            match tree with
-            | LeafNode m -> indentLine (lineFromMark m)
-            | InternalNode (f,sq) ->
-                indentLine (lineFromFolder f)
-                listBegin 
-        |]
-
-
+//        let indentLine (i:DocumentLine) =
+//            stringBuffer {
+//                for _ in 1 .. indent do "    "
+//                lineToString i
+//            }        
+//                
+//        seq { for l in lines do indentLine l }    
+//        
+//    lines
+//    |> Seq.map documentLine
+//    |> indentLines
        
-let DocumentFromMarks (marks:Mark list) =
+let DocumentFromMarks (marks:MarkInfo list) =
     let mutable indent = 0
     
     let indentLine (line:string) =
@@ -82,3 +94,21 @@ let DocumentFromMarks (marks:Mark list) =
         do indent <- indent - 1
         indentLine listEnd
     |] |> Array.append header
+    
+let DocumentFromTree (tree:BookmarkTree) =
+    let tab depth = String(' ', depth * 4)
+    let rec loop depth (tree:BookmarkTree) =
+        let spacer = tab depth
+        match tree with
+        | LeafNode m ->        
+            printfn "%s%s" spacer (lineFromMark m)
+        | InternalNode (f,subtrees) ->
+            printfn "%s%s" spacer (lineFromFolder f)
+            printfn "%s%s" spacer listBegin
+            subtrees |> Seq.iter (loop (depth + 1))
+            printfn "%s%s" spacer listEnd
+            
+    header |> Array.iter (printfn "%s") 
+    printfn "%s%s" (tab 0) listBegin
+    loop 1 tree
+    printfn "%s%s" (tab 0) listEnd

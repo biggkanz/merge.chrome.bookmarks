@@ -1,12 +1,19 @@
 ﻿namespace MergeBookmark
 
+open MergeBookmark.Domain
+
 module Operations =
     
     open System.Collections.Generic
     open Parse
     open Domain
     
-    let htmlToEntryList file =
+    let htmlToBookmarkLine file =
+        file
+            |> Seq.map ParseLine
+            |> Seq.choose id
+    
+    let htmlToEntry file =
         let mutable index = 0
         let parentFolders = List<int>()
         do parentFolders.Add(0)
@@ -25,20 +32,25 @@ module Operations =
                 Some (MarkEntry (index,
                       parentFolders.Item(parentFolders.Count-1),
                       bi))
-            | Some (BookmarkLine.ListCloseTag) ->
+            | Some (BookmarkLine.ListClose) ->
                 do parentFolders.RemoveAt(parentFolders.Count-1)
                 None    
             | _ -> None
         ]
         |> List.choose id
         
-    let itemToBookmark (lst:Entry list) =
+    let entryToBookmark (lst:Entry list) =
         lst
         |> List.map(fun x ->
             match x with
             | MarkEntry (_,_,mark) -> Some mark
             | _ -> None )
         |> List.choose id
+        
+    let HtmlToBookmark f =
+        f
+        |> htmlToEntry
+        |> entryToBookmark
                 
     // tree
         
@@ -60,9 +72,15 @@ module Operations =
                 | _ -> failwith "no root node found")
         root
         
+    let HtmlToTree f =
+        f
+        |> htmlToEntry
+        |> buildTree
+                
+    
     let getPath (tree:BookmarkTree) =
         let fMark acc mark =
             acc + mark.name + "| "
-        let fFolder acc (folder:Folder) =
+        let fFolder acc (folder:FolderInfo) =
             acc + folder.name + " -> "
         Tree.fold fMark fFolder "" tree

@@ -72,6 +72,6 @@ module Parse =
     let ParseLine (line:string) =
         if line.Contains("<H3") then Some (parseFolder line)
         elif line.Contains("<A HREF=") then parseBookmark line
-        elif line.Contains("<DL>") then Some (BookmarkLine.ListOpenTag)
-        elif line.Contains("</DL>") then Some (BookmarkLine.ListCloseTag)
+        elif line.Contains("<DL>") then Some (BookmarkLine.ListOpen)
+        elif line.Contains("</DL>") then Some (BookmarkLine.ListClose)
         else None
