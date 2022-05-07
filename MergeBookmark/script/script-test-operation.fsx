@@ -1,26 +1,25 @@
-﻿#load "..\Utility.fs"
+﻿#load "..\Util.fs"
 #load "..\Domain.fs"
 #load "..\Parse.fs"
-#load "..\Operations.fs"
+#load "..\Convert.fs"
 #load "..\Merge.fs"
 
 open MergeBookmark
+open System.IO
 
-let file30 = @"D:\repos\fsharp\merge.chrome.bookmarks\MergeBookmark\test\bookmarks_35_30dup.html"
-let file35 = @"D:\repos\fsharp\merge.chrome.bookmarks\MergeBookmark\test\bookmarks_35.html "
+let file30 = @"D:\documents\merge.chrome.bookmarks\test\bookmarks_35_30dup.html"
+let file35 = @"D:\documents\merge.chrome.bookmarks\test\bookmarks_35.html "
 
 let full =
-    Utility.IO.ReadAllLines file35
-    |> Operations.htmlToItem
-    |> Operations.itemToBookmark
+    File.ReadAllLines file35
+    |> Convert.HtmlToTree
     
 let dups =
-    Utility.IO.ReadAllLines file30
-    |> Operations.htmlToItem
-    |> Operations.itemToBookmark
+    File.ReadAllLines file30
+    |> Convert.HtmlToTree
     
-let unique = Merge.getUniqueBookmarks dups full |> Seq.toList
-    
-printfn $"Full: {full.Length} Dups: {dups.Length} Unique: {unique.Length}"
-
-unique
+//let unique = Merge.getUniqueBookmarks dups full |> Seq.toList
+//    
+//printfn $"Full: {full.Length} Dups: {dups.Length} Unique: {unique.Length}"
+//
+//unique

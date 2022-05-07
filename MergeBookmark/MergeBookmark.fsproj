@@ -6,19 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="test\bookmarks_35.html" />
-        <Content Include="test\bookmarks_35_30dup.html" />
-        <Content Include="test\test.html" />
-        <Content Include="test\test2.html" />
         <Content Include="test\test0.html" />
         <None Include="script\script-test-data.fsx" />
         <None Include="script\script-test-tree-sort.fsx" />
         <None Include="script\script-test-operation.fsx" />
-        <Compile Include="Utility.fs" />
+        <Compile Include="Util.fs" />
         <Compile Include="Domain.fs" />
         <Compile Include="Parse.fs" />
+        <Compile Include="Convert.fs" />
         <Compile Include="Build.fs" />
-        <Compile Include="Operations.fs" />
         <Compile Include="Merge.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
