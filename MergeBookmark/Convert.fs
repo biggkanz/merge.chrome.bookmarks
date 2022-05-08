@@ -1,42 +1,51 @@
 ﻿module MergeBookmark.Convert
-    
-open System.Collections.Generic
+
+open Util
+open Domain
 open Parse
-open MergeBookmark.Util
-open MergeBookmark.Domain
 
 let htmlToBookmarkLine file =
     file
-        |> Seq.map ParseLine
+        |> Seq.map ParseHtmlLine
         |> Seq.choose id
 
+// todo: cleanup/refactor
+// should be a way to do this without mutating
 let htmlToEntry file =
     let mutable index = 0
-    let parentFolders = List<int>()
-    do parentFolders.Add(0)
+    let parents = ResizeArray<int>()
+    do parents.Add(0)
     
-    [
-    for line in file do
-        match (ParseLine line) with
-        | Some (BookmarkLine.Folder fi) ->
-            do index <- index + 1                   
-            Some (FolderEntry (index,
-                parentFolders.Item(parentFolders.Count-1),
-                    fi))
-            do parentFolders.Add(index) 
-        | Some (BookmarkLine.Mark bi) ->
-            do index <- index + 1
-            Some (MarkEntry (index,
-                  parentFolders.Item(parentFolders.Count-1),
-                  bi))
-        | Some (BookmarkLine.ListClose) ->
-            do parentFolders.RemoveAt(parentFolders.Count-1)
+    let folderToEntry folder =
+        do index <- index + 1                   
+        let result =
+            Some (FolderEntry (
+                index,
+                parents.Item(parents.Count-1),
+                folder))
+        do parents.Add(index)
+        result
+        
+    let markToEntry mark =
+        do index <- index + 1
+        Some (MarkEntry (
+            index,
+            parents.Item(parents.Count-1),
+            mark))
+        
+    [for line in file do
+        match (ParseHtmlLine line) with
+        | Some (BookmarkLine.Folder folder) ->
+            folderToEntry folder
+        | Some (BookmarkLine.Mark mark) ->
+            markToEntry mark            
+        | Some BookmarkLine.ListClose ->
+            do parents.RemoveAt(parents.Count-1)
             None    
-        | _ -> None
-    ]
+        | _ -> None]
     |> List.choose id
     
-let entryToBookmark (lst:Entry list) =
+let entryToMark (lst:Entry list) =
     lst
     |> List.map(fun x ->
         match x with
@@ -45,7 +54,7 @@ let entryToBookmark (lst:Entry list) =
     |> List.choose id
           
 // tree    
-let buildTree (list:Entry list) =
+let entryToTree (list:Entry list) =
     let rec getChildren parentId = list |> List.choose (fun itm ->
         match itm with
         | MarkEntry (i,p,info) when p = parentId ->
@@ -63,14 +72,20 @@ let buildTree (list:Entry list) =
             | _ -> failwith "no root node found")
     root
     
+let markToTree (list:MarkInfo list) =
+    list
+    |> List.map (fun markinfo -> MarkEntry(-1,1,markinfo))
+    |> List.append [FolderEntry(1,0,{name="import";date="";modified=""})]
+    |> entryToTree
+    
 /// Convert bookmark file to List of MarkInfos
-let HtmlToBookmark f =
-    f
+let HtmlToBookmark file =
+    file
     |> htmlToEntry
-    |> entryToBookmark
+    |> entryToMark
     
 /// Convert bookmark file to BookmarkTree
-let HtmlToTree f =
-    f
+let HtmlToTree file =
+    file
     |> htmlToEntry
-    |> buildTree
+    |> entryToTree

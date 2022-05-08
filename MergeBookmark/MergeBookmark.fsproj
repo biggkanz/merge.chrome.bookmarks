@@ -12,10 +12,10 @@
         <None Include="script\script-test-operation.fsx" />
         <Compile Include="Util.fs" />
         <Compile Include="Domain.fs" />
+        <Compile Include="BookmarkTree.fs" />
         <Compile Include="Parse.fs" />
         <Compile Include="Convert.fs" />
         <Compile Include="Build.fs" />
-        <Compile Include="Merge.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

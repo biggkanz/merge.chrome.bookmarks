@@ -1,5 +1,57 @@
-﻿namespace MergeBookmark.Util
+﻿module MergeBookmark.Util
 
+type Tree<'LeafData,'INodeData> =
+    | LeafNode of 'LeafData
+    | InternalNode of 'INodeData * Tree<'LeafData,'INodeData> seq
+        
+/// Generic tree collection functions   
+module Tree =
+    
+    let rec cata fLeaf fNode (tree:Tree<'LeafData,'INodeData>) :'r =
+        let recurse = cata fLeaf fNode
+        match tree with
+        | LeafNode leafInfo ->
+            fLeaf leafInfo
+        | InternalNode (nodeInfo,subtrees) ->
+            fNode nodeInfo (subtrees |> Seq.map recurse)
+
+    let rec fold fLeaf fNode acc (tree:Tree<'LeafData,'INodeData>) :'r =
+        let recurse = fold fLeaf fNode
+        match tree with
+        | LeafNode leafInfo ->
+            fLeaf acc leafInfo
+        | InternalNode (nodeInfo,subtrees) ->
+            let localAccum = fNode acc nodeInfo
+            let finalAccum = subtrees |> Seq.fold recurse localAccum
+            finalAccum
+            
+    let rec map fLeaf fNode (tree:Tree<'LeafData,'INodeData>) =
+        let recurse = map fLeaf fNode
+        match tree with
+        | LeafNode leafInfo ->
+            let newLeafInfo = fLeaf leafInfo
+            LeafNode newLeafInfo
+        | InternalNode (nodeInfo,subtrees) ->
+            let newNodeInfo = fNode nodeInfo
+            let newSubtrees = subtrees |> Seq.map recurse
+            InternalNode (newNodeInfo, newSubtrees)
+            
+    let rec iter fLeaf fNode (tree:Tree<'LeafData,'INodeData>) =
+        let recurse = iter fLeaf fNode
+        match tree with
+        | LeafNode leafInfo ->
+            fLeaf leafInfo
+        | InternalNode (nodeInfo,subtrees) ->
+            subtrees |> Seq.iter recurse
+            fNode nodeInfo
+            
+    let rec flattenLeaf (tree:Tree<'LeafData,'INodeData>) =
+        seq {
+            match tree with
+            | LeafNode leafInfo -> yield leafInfo
+            | InternalNode (_,subtrees) -> yield! subtrees |> Seq.collect flattenLeaf
+         }
+        
 module Log =
     
     open System
@@ -50,50 +102,37 @@ module IO =
         Log.green (sprintf $"WriteAllLines: {file}")        
         File.WriteAllLines (file, lines)
         
-type Tree<'LeafData,'INodeData> =
-    | LeafNode of 'LeafData
-    | InternalNode of 'INodeData * Tree<'LeafData,'INodeData> seq
+module Regex =
+    
+    open System
+    open System.Text.RegularExpressions
+    
+    let (|Integer64|_|) (str: string) =
+       let mutable int64value = 0L
+       if Int64.TryParse(str, &int64value) then Some(int64value)
+       else None
+          
+    let (|String|_|) (str: string) =
+       if str.Length > 0 then Some(str)
+       else None
+       
+    /// parses a regular expression and returns a list of the strings that match
+    let (|ParseRegexGroups|_|) regex str =
+       let m = Regex(regex, RegexOptions.IgnoreCase).Match(str)
+       if m.Success
+       then Some (List.tail [ for x in m.Groups -> x.Value ])
+       else None
+       
+    /// parse and return one string match group
+    let ParseString regx str =
+        match str with
+        | ParseRegexGroups regx [String s]
+            -> Some s
+        | _ -> None
         
-/// Tree collection functions   
-module Tree =
-
-    let rec cata fLeaf fNode (tree:Tree<'LeafData,'INodeData>) :'r =
-        let recurse = cata fLeaf fNode
-        match tree with
-        | LeafNode leafInfo ->
-            fLeaf leafInfo
-        | InternalNode (nodeInfo,subtrees) ->
-            fNode nodeInfo (subtrees |> Seq.map recurse)
-
-    let rec fold fLeaf fNode acc (tree:Tree<'LeafData,'INodeData>) :'r =
-        let recurse = fold fLeaf fNode
-        match tree with
-        | LeafNode leafInfo ->
-            fLeaf acc leafInfo
-        | InternalNode (nodeInfo,subtrees) ->
-            // determine the local accumulator at this level
-            let localAccum = fNode acc nodeInfo
-            // thread the local accumulator through all the subitems using Seq.fold
-            let finalAccum = subtrees |> Seq.fold recurse localAccum
-            // ... and return it
-            finalAccum
-            
-    let rec map fLeaf fNode (tree:Tree<'LeafData,'INodeData>) =
-        let recurse = map fLeaf fNode
-        match tree with
-        | LeafNode leafInfo ->
-            let newLeafInfo = fLeaf leafInfo
-            LeafNode newLeafInfo
-        | InternalNode (nodeInfo,subtrees) ->
-            let newNodeInfo = fNode nodeInfo
-            let newSubtrees = subtrees |> Seq.map recurse
-            InternalNode (newNodeInfo, newSubtrees)
-            
-    let rec iter fLeaf fNode (tree:Tree<'LeafData,'INodeData>) =
-        let recurse = iter fLeaf fNode
-        match tree with
-        | LeafNode leafInfo ->
-            fLeaf leafInfo
-        | InternalNode (nodeInfo,subtrees) ->
-            subtrees |> Seq.iter recurse
-            fNode nodeInfo
+    /// return a match group
+    let ParseInteger64 regx str =
+        match str with
+        | ParseRegexGroups regx [Integer64 i]
+            -> Some i
+        | _ -> None

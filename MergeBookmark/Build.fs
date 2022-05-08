@@ -1,10 +1,11 @@
 ﻿module MergeBookmark.Build
 
 open System
-open MergeBookmark.Domain
-open MergeBookmark.Util
+open Domain
+open Util
 
-let listBegin = """<DL><p>"""    
+let listBegin = """<DL><p>"""
+
 let listEnd = """</DL><p>"""
 
 let header = seq {
@@ -22,15 +23,17 @@ let footer = seq { listEnd }
 
 let toolbarFolder date modified =
     $"<DT><H3 ADD_DATE=\"{date}\" LAST_MODIFIED=\"{modified}\" PERSONAL_TOOLBAR_FOLDER=\"true\">Bookmarks</H3>"
-let folder date modified name =
-    $"<DT><H3 ADD_DATE=\"{date}\" LAST_MODIFIED=\"{modified}\">{name}</H3>"
-let mark href date icon name =
-    $"<DT><A HREF=\"{href}\" ADD_DATE=\"{date}\" ICON=\"{icon}\">\"{name}\"</A>"
+
+let lineFromMark m = 
+    let mark href date icon name =
+        $"<DT><A HREF=\"{href}\" ADD_DATE=\"{date}\" ICON=\"{icon}\">\"{name}\"</A>"
+    mark m.href "" m.icon m.name
+
+let lineFromFolder f =
+    let folder date modified name =
+        $"<DT><H3 ADD_DATE=\"{date}\" LAST_MODIFIED=\"{modified}\">{name}</H3>"
+    folder f.date "" f.name
     
-let lineFromMark m = mark m.href "" m.icon m.name
-     
-let lineFromFolder f = folder f.date "" f.name
-        
 let DocumentFromTree (tree:BookmarkTree) =
     let body = 
         let tab depth = String(' ', depth * 4)
