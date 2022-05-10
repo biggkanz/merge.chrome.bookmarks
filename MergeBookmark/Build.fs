@@ -1,4 +1,5 @@
-﻿module MergeBookmark.Build
+﻿/// build a netscape bookmark file from tree
+module MergeBookmark.Build
 
 open System
 open Domain
@@ -26,7 +27,7 @@ let toolbarFolder date modified =
 
 let lineFromMark m = 
     let mark href date icon name =
-        $"<DT><A HREF=\"{href}\" ADD_DATE=\"{date}\" ICON=\"{icon}\">\"{name}\"</A>"
+        $"<DT><A HREF=\"{href}\" ADD_DATE=\"{date}\" ICON=\"{icon}\">{name}</A>"
     mark m.href "" m.icon m.name
 
 let lineFromFolder f =

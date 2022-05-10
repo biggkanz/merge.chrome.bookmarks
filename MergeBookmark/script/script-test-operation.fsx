@@ -2,7 +2,6 @@
 #load "..\Domain.fs"
 #load "..\Parse.fs"
 #load "..\Convert.fs"
-#load "..\Merge.fs"
 
 open MergeBookmark
 open System.IO

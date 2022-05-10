@@ -16,6 +16,7 @@
         <Compile Include="Parse.fs" />
         <Compile Include="Convert.fs" />
         <Compile Include="Build.fs" />
+        <Compile Include="Operations.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

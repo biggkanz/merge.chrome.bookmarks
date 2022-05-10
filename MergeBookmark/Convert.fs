@@ -1,4 +1,5 @@
-﻿module MergeBookmark.Convert
+﻿/// functions to convert bookmark collections to entry list or tree
+module MergeBookmark.Convert
 
 open Util
 open Domain
@@ -77,6 +78,7 @@ let markToTree (list:MarkInfo list) =
     |> List.map (fun markinfo -> MarkEntry(-1,1,markinfo))
     |> List.append [FolderEntry(1,0,{name="import";date="";modified=""})]
     |> entryToTree
+    
     
 /// Convert bookmark file to List of MarkInfos
 let HtmlToBookmark file =

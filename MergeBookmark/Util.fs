@@ -90,6 +90,7 @@ module Time =
 module IO =
     
     open System.IO
+    open System
 
     let ReadAllLines file =
         Log.green (sprintf $"ReadAllLines: {file}")
@@ -99,6 +100,7 @@ module IO =
         | ex -> failwith $"error in MergeBookmark.IO.ReadAllLines: {file}"
         
     let WriteAllLines file lines =
+        //let date = Time.ToUnixTimeSeconds DateTime.Now
         Log.green (sprintf $"WriteAllLines: {file}")        
         File.WriteAllLines (file, lines)
         

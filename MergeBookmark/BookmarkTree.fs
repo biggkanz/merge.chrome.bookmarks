@@ -50,7 +50,7 @@ let ContainsMarks (tree2:BookmarkTree) (tree1:BookmarkTree) =
     marks2
     |> Seq.map (fun x -> containsMark x marks1)
     
-let DistinctMarks (tree2:BookmarkTree) (tree1:BookmarkTree) =
+let DiffMarks (tree2:BookmarkTree) (tree1:BookmarkTree) =
     let distinct m marks =
         let dup =
             marks
