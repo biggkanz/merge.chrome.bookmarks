@@ -39,7 +39,7 @@ let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
         
         match parent with
         | Some f -> f
-        | _ -> failwith "parent doesn't exist"
+        | _ -> failwith "no parent found"
         
     list2
     |> toMarkEntry

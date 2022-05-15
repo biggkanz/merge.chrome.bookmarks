@@ -33,7 +33,7 @@ let htmlToEntry file =
             index,
             parents.Item(parents.Count-1),
             mark))
-        
+    
     [for line in file do
         match (ParseHtmlLine line) with
         | Some (BookmarkLine.Folder folder) ->
@@ -45,6 +45,7 @@ let htmlToEntry file =
             None    
         | _ -> None]
     |> List.choose id
+    |> List.append [FolderEntry (0,-1,{name="Bookmarks"; date="0"; modified="0"})]
     
 let entryToMark (lst:Entry list) =
     lst
