@@ -12,6 +12,7 @@
         <None Include="script\script-test-operation.fsx" />
         <Compile Include="Util.fs" />
         <Compile Include="Domain.fs" />
+        <Compile Include="Entry.fs" />
         <Compile Include="BookmarkTree.fs" />
         <Compile Include="Parse.fs" />
         <Compile Include="Convert.fs" />
