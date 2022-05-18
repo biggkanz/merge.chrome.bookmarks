@@ -55,7 +55,7 @@ let DocumentFromTree (tree:BookmarkTree) =
                          
                     yield sprintf "%s%s" spacer listEnd }
         loop 1 tree
-    
+    // result
     footer
         |> Seq.append body
         |> Seq.append header

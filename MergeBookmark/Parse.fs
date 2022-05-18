@@ -1,4 +1,4 @@
-﻿/// Parse a netscape html bookmark file
+﻿/// Parse a netscape html bookmark file 
 module MergeBookmark.Parse
     
 open Util
