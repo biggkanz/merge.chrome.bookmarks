@@ -14,13 +14,12 @@ type BookmarkLine =
     | Mark of MarkInfo
     | ListOpen 
     | ListClose
-    
-type FolderEntry = {id:int; parentId:int; folderInfo:FolderInfo}
-type MarkEntry = {id:int; parentId:int; markInfo:MarkInfo}
-    
-/// intermediate data with primaryId and parentId
-type Entry =
-    | FolderEntry of FolderEntry
-    | MarkEntry of MarkEntry
-//and FolderEntry = int * int * FolderInfo
-//and MarkEntry = int * int * MarkInfo
+
+type EntryInfo =
+    | MarkInfo of MarkInfo
+    | FolderInfo of FolderInfo
+
+type Entry2 = 
+    { id: int
+      parentId: int
+      info: EntryInfo }

@@ -1,21 +1,31 @@
 ﻿module MergeBookmark.Entry
 
 open Domain
-open MergeBookmark.Domain
+
+let getName (e:Entry2) =
+    match e.info with
+    | MarkInfo markInfo -> markInfo.name
+    | FolderInfo folderInfo  -> folderInfo.name
+
+let tryToMark e =
+    match e.info with
+    | MarkInfo markInfo -> Some markInfo
+    | _ -> None
+    
+let tryToFolder e =
+    match e.info with
+    | FolderInfo folderInfo -> Some e
+    | _ -> None
 
 let toFolderEntry lst =
     lst
-    |> List.choose (fun x ->
-        match x with
-        | FolderEntry f -> Some f
-        | _ -> None)
+    |> List.map tryToFolder
+    |> List.choose id
     
-let toMarkEntry lst =
+let toMarkInfo lst =
     lst
-    |> List.choose(fun x ->
-        match x with
-        | MarkEntry m -> Some m
-        | _ -> None)
+    |> List.map tryToMark
+    |> List.choose id    
     
 let getRootFolder lst =
     lst
@@ -23,32 +33,37 @@ let getRootFolder lst =
     |> List.minBy (fun x -> x.id)
 
 /// Get unique marks and parents from list2
-let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
-    /// Return MarkEntry if it doesn't exist in list1
-    let tryGetUnique (me:MarkEntry) =
-        let dup =
-            list1
-            |> toMarkEntry
-            |> List.tryFind (fun x -> x.markInfo.href = me.markInfo.href)
-            
-        match dup with
-        | Some _ -> None
-        | _ -> Some me
+let DiffMarksAndParent (list1:Entry2 list) (list2:Entry2 list) =
+    /// Return MarkInfo if it doesn't exist in list1
+    let tryGetUniqueMark e =
+        let mark = tryToMark e
+        match mark with
+        | Some m ->
+            let dup =
+                list1
+                |> toMarkInfo
+                |> List.tryFind (fun x -> x.href = m.href)
+                
+            match dup with
+            | Some _ -> None
+            | _ -> Some e
+        | None -> None
       
-    // Get the parent folder of the MarkEntry  
-    let getParent (me:MarkEntry) : FolderEntry =
+    // Get the parent of the Entry  
+    let getParent (me:Entry2) : Entry2 =
         let parent =
             list2
-            |> toFolderEntry
             |> List.tryFind (fun e -> e.id = me.parentId)
         
         match parent with
-        | Some f -> f
+        | Some f ->
+                match f.info with
+                | FolderInfo _ -> f
+                | MarkInfo _ -> failwith "error: parent is a mark info"
         | _ -> failwith "no parent found"
         
     list2
-    |> toMarkEntry
-    |> List.choose tryGetUnique
+    |> List.choose tryGetUniqueMark
     |> List.map (fun k -> (k,getParent k))
     
 //let InsertMark (mrk:MarkEntry,prnt:FolderEntry) (entries:Entry list) =
@@ -67,3 +82,5 @@ let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
 //        |> Option.defaultValue (getRootFolder entries)
 //    
 //    (parent, getUniqueId entries)
+
+

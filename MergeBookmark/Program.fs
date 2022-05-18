@@ -6,12 +6,16 @@ open Operations
 [<EntryPoint>]
 let main args =
     if args.Length > 1 then        
-        let count =
-            GetUniqueMarksEntry @"D:\documents\merge.chrome.bookmarks\bookmark"
-            |> List.length
+        let lst =
+            GetUniqueMarksEntry @"D:\documents\merge.chrome.bookmarks\bookmark"            
             
-        printfn $"count:{count}"
-                 
+        printfn $"count:{lst |> List.length}"
+        
+        let names =
+            lst
+            |> List.map (fun (x,y)->(Entry.getName x, Entry.getName y))
+            |> List.iter  (fun (x,y)->printfn "|-%s | %s" x y)
+            
         0
     else
         1

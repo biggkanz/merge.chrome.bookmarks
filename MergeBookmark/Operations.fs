@@ -47,6 +47,3 @@ let GetUniqueMarksEntry dir =
         marksAndParent (loadFile file)]
     |> List.concat
     |> List.distinctBy fst
-    
-
-        
