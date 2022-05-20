@@ -2,10 +2,15 @@
 
 open Domain
 
-let getName (e:Entry2) =
+let getName (e:Entry) =
     match e.info with
     | MarkInfo markInfo -> markInfo.name
     | FolderInfo folderInfo  -> folderInfo.name
+
+let getHashCode (e:Entry) =
+    match e.info with
+    | MarkInfo markInfo -> markInfo.href.GetHashCode()
+    | FolderInfo folderInfo  -> folderInfo.name.GetHashCode()
 
 let tryToMark e =
     match e.info with
@@ -33,7 +38,7 @@ let getRootFolder lst =
     |> List.minBy (fun x -> x.id)
 
 /// Get unique marks and parents from list2
-let DiffMarksAndParent (list1:Entry2 list) (list2:Entry2 list) =
+let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
     /// Return MarkInfo if it doesn't exist in list1
     let tryGetUniqueMark e =
         let mark = tryToMark e
@@ -50,7 +55,7 @@ let DiffMarksAndParent (list1:Entry2 list) (list2:Entry2 list) =
         | None -> None
       
     // Get the parent of the Entry  
-    let getParent (me:Entry2) : Entry2 =
+    let getParent (me:Entry) : Entry =
         let parent =
             list2
             |> List.tryFind (fun e -> e.id = me.parentId)

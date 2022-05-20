@@ -14,7 +14,7 @@ let main args =
         let names =
             lst
             |> List.map (fun (x,y)->(Entry.getName x, Entry.getName y))
-            |> List.iter  (fun (x,y)->printfn "|-%s | %s" x y)
+            |> List.iter  (fun (x,y)->printfn $"|-%s{x} | %s{y}")
             
         0
     else

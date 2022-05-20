@@ -19,7 +19,7 @@ type EntryInfo =
     | MarkInfo of MarkInfo
     | FolderInfo of FolderInfo
 
-type Entry2 = 
+type Entry = 
     { id: int
       parentId: int
       info: EntryInfo }
