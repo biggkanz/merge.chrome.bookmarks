@@ -47,3 +47,19 @@ let GetUniqueMarksEntry dir =
         marksAndParent (loadFile file)]
     |> List.concat
     |> List.distinctBy fst
+    
+let GetUniqueMarksEntry_test file1 file2 =
+    let loadFile file =
+        IO.ReadAllLines file
+        |> Convert.htmlToEntry
+        
+    let entries1 = loadFile file1
+    let entries2 = loadFile file2
+        
+    let uniqueMarks =
+        entries2
+        |> Entry.DiffMarksAndParent entries1
+        
+    entries1
+    |> Entry.InsertMarkAtParent uniqueMarks.Head
+    |> List.sortBy (fun e -> e.id)

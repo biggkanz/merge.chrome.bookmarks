@@ -13,12 +13,11 @@ let htmlToBookmarkLine file =
 // todo: cleanup/refactor
 // should be a way to do this without mutating
 let htmlToEntry file =
-    let mutable index = 0
+    let mutable index = -1
     let parents = ResizeArray<int>()
     do parents.Add(0)
     
-    let folderToEntry (folder:FolderInfo) =
-        
+    let folderToEntry (folder:FolderInfo) =        
         do index <- index + 1                   
         let result =
             Some
@@ -37,16 +36,14 @@ let htmlToEntry file =
             
     [for line in file do
         match (ParseHtmlLine line) with
-        | Some (BookmarkLine.Folder folder) ->
-            folderToEntry folder
-        | Some (BookmarkLine.Mark mark) ->
-            markToEntry mark            
-        | Some BookmarkLine.ListClose ->
+        | Some (Folder folder) -> folderToEntry folder
+        | Some (Mark mark) -> markToEntry mark            
+        | Some ListClose ->
             do parents.RemoveAt(parents.Count-1)
             None    
         | _ -> None]
     |> List.choose id
-    |> List.append  [{ id = 0; parentId = (-1); info = FolderInfo{name="Bookmarks";date="0";modified="0";}}]
+    //|> List.append  [{ id = 0; parentId = (-1); info = FolderInfo{name="Bookmarks";date="0";modified="0";}}]
   
 let entryToMark (lst:Entry list) =
     lst

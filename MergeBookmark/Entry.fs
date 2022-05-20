@@ -2,6 +2,11 @@
 
 open Domain
 
+let toString (e:Entry) =
+    match e.info with
+    | MarkInfo markInfo -> "-" + markInfo.href
+    | FolderInfo folderInfo  -> ">" + folderInfo.name
+
 let getName (e:Entry) =
     match e.info with
     | MarkInfo markInfo -> markInfo.name
@@ -36,6 +41,10 @@ let getRootFolder lst =
     lst
     |> toFolderEntry
     |> List.minBy (fun x -> x.id)
+    
+let getNextId lst =
+    let maxId = lst |> List.maxBy (fun x -> x.id)    
+    maxId.id  + 1    
 
 /// Get unique marks and parents from list2
 let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
@@ -71,21 +80,14 @@ let DiffMarksAndParent (list1:Entry list) (list2:Entry list) =
     |> List.choose tryGetUniqueMark
     |> List.map (fun k -> (k,getParent k))
     
-//let InsertMark (mrk:MarkEntry,prnt:FolderEntry) (entries:Entry list) =
-//    let tryFindParent p lst =
-//        lst
-//        |> toFolderEntry
-//        |> List.tryFind (fun fe -> fe.folderInfo.name = p.folderInfo.name)
-//        
-//    let getUniqueId (lst:Entry list) : int =
-//        lst
-//        |> List.map (fun x -> x.id)
-//        |> List.max
-//
-//    let parent =
-//        tryFindParent prnt entries
-//        |> Option.defaultValue (getRootFolder entries)
-//    
-//    (parent, getUniqueId entries)
-
-
+let InsertMarkAtParent (mark,parent) (entries:Entry list) =
+    let insertAfter entry parentId =
+        entries |> List.insertAt parentId entry 
+    
+    let insertParent = entries |> List.find(fun e -> getName e = getName parent)        
+    let nextId = getNextId entries        
+    let insertEntry = {id = nextId; parentId = insertParent.id; info = mark.info}
+    
+    insertAfter insertEntry insertParent.id
+    
+    
